@@ -10,6 +10,7 @@ import (
 	"github.com/N0mad-gg/Nomad/server/internal/message"
 	nomadserver "github.com/N0mad-gg/Nomad/server/internal/server"
 	"github.com/N0mad-gg/Nomad/server/internal/ws"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	"github.com/quic-go/quic-go/http3"
@@ -34,6 +35,12 @@ func main() {
 	wsHandler := ws.NewHandler(hub, pg, wtServer)
 
 	r := gin.Default()
+	r.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"http://localhost:5173", "https://tauri.localhost"},
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
+		AllowCredentials: true,
+	}))
 
 	r.GET("/health", func(c *gin.Context) {
 		c.JSON(200, gin.H{"status": "ok"})

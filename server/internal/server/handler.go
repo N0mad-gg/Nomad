@@ -20,7 +20,7 @@ func NewHandler(db *pgxpool.Pool) *Handler {
 
 func (h *Handler) Create(c *gin.Context) {
 	var req struct {
-		Name string `json:"name" binding:"required,min=2,max=100"`
+		Name string `json:"name" binding:"required,min=1,max=100"`
 	}
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})

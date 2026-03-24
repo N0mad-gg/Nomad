@@ -14,9 +14,13 @@ export default function ChatArea() {
 
   const send = async () => {
     if (!input.trim() || !activeServerId || !activeChannelId) return
-    const res = await sendMessage(activeServerId, activeChannelId, input.trim())
-    addMessage(res.data)
-    setInput('')
+    try {
+      const res = await sendMessage(activeServerId, activeChannelId, input.trim())
+      addMessage(res.data)
+      setInput('')
+    } catch (e: any) {
+      console.error('send failed:', e?.response?.data ?? e)
+    }
   }
 
   return (
