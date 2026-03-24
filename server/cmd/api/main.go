@@ -7,9 +7,13 @@ import (
 	"github.com/N0mad-gg/Nomad/server/internal/auth"
 	"github.com/N0mad-gg/Nomad/server/internal/channel"
 	"github.com/N0mad-gg/Nomad/server/internal/db"
+	"github.com/N0mad-gg/Nomad/server/internal/message"
 	nomadserver "github.com/N0mad-gg/Nomad/server/internal/server"
+	"github.com/N0mad-gg/Nomad/server/internal/ws"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
+	"github.com/quic-go/quic-go/http3"
+	"github.com/quic-go/webtransport-go"
 )
 
 func main() {
@@ -22,6 +26,12 @@ func main() {
 	defer pg.Close()
 
 	_ = db.NewRedis(cfg.RedisURL)
+
+	wtServer := &webtransport.Server{
+		H3: &http3.Server{Addr: ":" + cfg.Port},
+	}
+	hub := ws.NewHub()
+	wsHandler := ws.NewHandler(hub, pg, wtServer)
 
 	r := gin.Default()
 
@@ -52,6 +62,13 @@ func main() {
 			protected.GET("/servers/:server_id/channels", channelHandler.List)
 			protected.POST("/servers/:server_id/channels", channelHandler.Create)
 			protected.DELETE("/servers/:server_id/channels/:channel_id", channelHandler.Delete)
+
+			msgHandler := message.NewHandler(pg)
+			protected.GET("/servers/:server_id/channels/:channel_id/messages", msgHandler.List)
+			protected.POST("/servers/:server_id/channels/:channel_id/messages", msgHandler.Send)
+			protected.DELETE("/servers/:server_id/channels/:channel_id/messages/:message_id", msgHandler.Delete)
+
+			protected.GET("/gateway", wsHandler.Connect)
 		}
 	}
 
