@@ -1,0 +1,23 @@
+# Go
+server/bin/
+*.exe
+
+# Node
+node_modules/
+dist/
+.env
+.env.local
+
+# Tauri
+apps/desktop/src-tauri/target/
+
+# Rust (Tauri)
+target/
+
+# DB
+*.db
+*.sqlite
+
+# OS
+.DS_Store
+Thumbs.db
