@@ -55,7 +55,7 @@ func (h *Handler) List(c *gin.Context) {
 
 	rows, err := h.db.Query(context.Background(),
 		`SELECT m.id, m.channel_id, m.user_id, u.username, m.content,
-		        m.created_at, m.edited_at
+		        m.created_at::text, m.edited_at::text
 		 FROM messages m
 		 JOIN users u ON u.id = m.user_id
 		 WHERE m.channel_id = $1
@@ -101,7 +101,7 @@ func (h *Handler) Send(c *gin.Context) {
 	err := h.db.QueryRow(context.Background(),
 		`INSERT INTO messages (channel_id, user_id, content)
 		 VALUES ($1, $2, $3)
-		 RETURNING id, channel_id, user_id, content, created_at`,
+		 RETURNING id, channel_id, user_id, content, created_at::text`,
 		channelID, userID, req.Content,
 	).Scan(&m.ID, &m.ChannelID, &m.UserID, &m.Content, &m.CreatedAt)
 	if err != nil {
