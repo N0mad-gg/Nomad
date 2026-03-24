@@ -5,7 +5,9 @@ import (
 
 	"github.com/N0mad-gg/Nomad/server/config"
 	"github.com/N0mad-gg/Nomad/server/internal/auth"
+	"github.com/N0mad-gg/Nomad/server/internal/channel"
 	"github.com/N0mad-gg/Nomad/server/internal/db"
+	nomadserver "github.com/N0mad-gg/Nomad/server/internal/server"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 )
@@ -39,6 +41,17 @@ func main() {
 			protected.GET("/me", func(c *gin.Context) {
 				c.JSON(200, gin.H{"user_id": c.GetString("user_id")})
 			})
+
+			serverHandler := nomadserver.NewHandler(pg)
+			protected.POST("/servers", serverHandler.Create)
+			protected.GET("/servers", serverHandler.List)
+			protected.POST("/servers/join/:invite_code", serverHandler.Join)
+			protected.DELETE("/servers/:id", serverHandler.Delete)
+
+			channelHandler := channel.NewHandler(pg)
+			protected.GET("/servers/:server_id/channels", channelHandler.List)
+			protected.POST("/servers/:server_id/channels", channelHandler.Create)
+			protected.DELETE("/servers/:server_id/channels/:channel_id", channelHandler.Delete)
 		}
 	}
 
