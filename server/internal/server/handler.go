@@ -118,7 +118,7 @@ func (h *Handler) Join(c *gin.Context) {
 }
 
 func (h *Handler) Delete(c *gin.Context) {
-	serverID := c.Param("id")
+	serverID := c.Param("server_id")
 	userID := c.GetString("user_id")
 
 	result, err := h.db.Exec(context.Background(),

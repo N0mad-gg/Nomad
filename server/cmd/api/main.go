@@ -56,7 +56,7 @@ func main() {
 			protected.POST("/servers", serverHandler.Create)
 			protected.GET("/servers", serverHandler.List)
 			protected.POST("/servers/join/:invite_code", serverHandler.Join)
-			protected.DELETE("/servers/:id", serverHandler.Delete)
+			protected.DELETE("/servers/:server_id", serverHandler.Delete)
 
 			channelHandler := channel.NewHandler(pg)
 			protected.GET("/servers/:server_id/channels", channelHandler.List)
